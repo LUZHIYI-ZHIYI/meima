@@ -31,13 +31,13 @@
               <el-input v-model="form.code" prefix-icon="el-icon-key" placeholder="请输入验证码"></el-input>
             </el-col>
             <el-col :span="8">
-              <img class="key" src="@/assets/img/key.jpg" alt />
+              <img class="key" @click="codeClick" :src="codaURL" alt />
             </el-col>
           </el-row>
         </el-form-item>
 
         <!-- 协议 -->
-        <el-form-item>
+        <el-form-item prop="isCheck">
           <el-checkbox v-model="form.isCheck">
             我已阅读并同意
             <el-link type="primary">用户协议</el-link>和
@@ -61,13 +61,19 @@
 </template>
 
 <script>
-import register from './register.vue'
+// 导入子组件
+import register from "./register.vue";
+// 导入axios请求的封装
+import {toLogin} from '@/api/login.js'
+// 导入token
+import {saveToken} from '@/utils/token.js'
 export default {
-  components:{
+  components: {
     register
   },
   data() {
     return {
+      codaURL: process.env.VUE_APP_URL + "/captcha?type=login",
       form: {
         // 用户名
         phone: "",
@@ -81,7 +87,19 @@ export default {
       rules: {
         // 手机号码验证
         phone: [
-          { required: true, message: "请输入手机号码", trigger: "change" }
+          { required: true, message: "请输入手机号码", trigger: "change" },
+          {
+            validator: (rule, value, callback) => {
+              let _reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
+              if (_reg.test(value)) {
+                // 验证成功
+                callback();
+              } else {
+                // 验证不成功
+                callback("请输入正确的手机号码");
+              }
+            }
+          }
         ],
         // 密码验证
         password: [
@@ -92,29 +110,60 @@ export default {
         code: [
           { required: true, message: "请输入验证码", trigger: "change" },
           { min: 4, max: 4, message: "请输入正确的验证码", trigger: "change" }
+        ],
+        // 单选框验证
+        isCheck:[
+          { required: true, message: "请勾选同意协议", trigger: "change" },
+           {
+            validator: (rule, value, callback) => {
+              if (value === true) {
+                // 验证成功
+                callback();
+              } else {
+                // 验证不成功
+                callback("请勾选同意协议");
+              }
+            }
+          }
         ]
       }
     };
   },
   methods: {
-    // 表单完整验证并弹框
-    loginClick(){
-      this.$refs.form.validate(valid=>{
+    // 点击登录按钮 表单完整验证并弹框/全局验证
+    loginClick() {
+      // 全局验证
+      this.$refs.form.validate(valid => {
+        // 如果正确就发送axios请求
         if (valid) {
           // 消息弹出(成功)
-          this.$message.success('登录成功')
-        }else{
+          // 封装的api,登录axios
+          toLogin(this.form).then(res=>{
+            console.log(res);
+            // 登录成功消息请求
+            if (res.code == 200) {
+              this.$message.success("登录成功");
+              // 保存token
+              saveToken(res.data.token)
+            }
+            
+          })
+        } else {
           // 消息弹出(失败)
-          this.$message.warning('请输入正确的消息')
+          this.$message.warning("请输入正确的消息");
         }
-      })
+      });
     },
     // 注册模块
-    registerClick(){
-      this.$refs.register.dialogFormVisible = true
+    registerClick() {
+      this.$refs.register.dialogFormVisible = true;
+    },
+    // 点击验证码切换图片
+    codeClick() {
+      this.codaURL =
+        process.env.VUE_APP_URL + "/captcha?type=login&t=" + Date.now();
     }
-
-  },
+  }
 };
 </script>
 
@@ -169,7 +218,8 @@ export default {
     /* 表单元素样式 */
     .key {
       width: 100%;
-      height: 44px;
+      height: 40px;
+      border: 1px dashed #000;
     }
     .btn {
       width: 100%;
