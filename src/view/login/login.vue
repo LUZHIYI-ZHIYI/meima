@@ -66,7 +66,7 @@ import register from "./register.vue";
 // 导入axios请求的封装
 import {toLogin} from '@/api/login.js'
 // 导入token
-import {saveToken} from '@/utils/token.js'
+import {saveToken,getToken} from '@/utils/token.js'
 export default {
   components: {
     register
@@ -145,6 +145,8 @@ export default {
               this.$message.success("登录成功");
               // 保存token
               saveToken(res.data.token)
+              // 登录成功后跳转页面
+              this.$router.push('/home')
             }
             
           })
@@ -163,7 +165,13 @@ export default {
       this.codaURL =
         process.env.VUE_APP_URL + "/captcha?type=login&t=" + Date.now();
     }
-  }
+  },
+  created() {
+    // 判断如果有token就直接登录
+    if (getToken()) {
+      this.$router.push('/home')
+    }
+  },
 };
 </script>
 
