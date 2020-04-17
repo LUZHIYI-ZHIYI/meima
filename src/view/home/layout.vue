@@ -7,8 +7,9 @@
         <span class="title">黑马面面</span>
       </div>
       <div class="right">
-        <img class="avatar" :src="userName.avatar" alt />
-        <span class="name">{{userName.username}}，您好</span>
+        <!-- 替换成了共有信息中的对象 -->
+        <img class="avatar" :src="this.$store.state.userName.avatar" alt />
+        <span class="name">{{this.$store.state.userName.username}}，您好</span>
         <el-button type="primary" size="small" @click="exit">退出</el-button>
       </div>
     </el-header>
@@ -70,7 +71,10 @@ export default {
     getUserPage().then(res => {
       console.log(res);
       this.userName = res.data;
+      // 图片路径拼接
       this.userName.avatar = process.env.VUE_APP_URL + "/" + res.data.avatar;
+      // 用户信息存储到共享信息中方便后面使用
+      this.$store.state.userName = this.userName
     });
   },
   methods: {

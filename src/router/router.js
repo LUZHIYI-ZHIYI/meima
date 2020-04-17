@@ -18,7 +18,10 @@ Vue.use(VueRouter)
 let router = new VueRouter({
     routes: [{
         path: '/',
-        component: login
+        component: login,
+        meta:{
+            title:'登录页面'
+        }
     },
     // 跳转个人主页
     {
@@ -29,27 +32,42 @@ let router = new VueRouter({
             // 数据概览路由
             {
                 path:'chart',
-                component:chart
+                component:chart,
+                meta:{
+                    title:'数据概览'
+                }
             },
             // 用户列表路由
             {
                 path:'userList',
-                component:userList
+                component:userList,
+                meta:{
+                    title:'用户列表'
+                }
             },
             // 题库列表路由
             {
                 path:'question',
-                component:question
+                component:question,
+                meta:{
+                    title:'题库列表'
+                }
             },
             // 企业列表路由
             {
                 path:'business',
-                component:business
+                component:business,
+                meta:{
+                    title:'企业列表'
+                }
             },
             // 学科列表路由
             {
                 path:'subject',
-                component:subject
+                component:subject,
+                meta:{
+                    title:'学科列表'
+                }
             },
         ]
     },
@@ -62,7 +80,8 @@ router.beforeEach((to,form,next)=>{
     
     
 })
-router.afterEach(()=>{
+router.afterEach((to)=>{
     NProgress.done()
+    document.title = to.meta.title 
 })
 export default router
