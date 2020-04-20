@@ -76,9 +76,9 @@ export default {
       codaURL: process.env.VUE_APP_URL + "/captcha?type=login",
       form: {
         // 用户名
-        phone: "",
+        phone: "18511111111",
         // 密码
-        password: "",
+        password: "12345678",
         // 验证码
         code: "",
         // 单选框

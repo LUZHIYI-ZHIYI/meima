@@ -39,7 +39,7 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-main>
+      <el-main class="main">
         <!-- 嵌套路由的出口 -->
         <router-view></router-view>
       </el-main>
@@ -110,6 +110,7 @@ export default {
     .left {
       .setheight {
         font-size: 20px;
+        cursor: pointer;
       }
       .marginlr {
         margin-left: 10px;
@@ -145,6 +146,9 @@ export default {
   }
   .collectFolded:not(.el-menu--collapse){
     width: 200px;
+  }
+  .main{
+    background:rgba(232,233,236,1);
   }
 }
 </style>
